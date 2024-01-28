@@ -43,9 +43,21 @@ impl Database {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+enum TimepointType {
+    START,
+    STOP,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Timepoint {
+    tp: std::time::SystemTime,
+    tp_type: TimepointType,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Feature {
     feature_name: String,
-    time_spent_minutes: u64,
+    timeoints: Vec<Timepoint>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -59,7 +71,7 @@ impl Project {
         //create not-featured feature to track non feature specific time.
         let not_featured = Feature {
             feature_name: "Not Featured".to_string(),
-            time_spent_minutes: 0,
+            timeoints: Vec::new(),
         };
 
         let the_project = Project {
@@ -72,7 +84,7 @@ impl Project {
     pub fn create_feature(feature_name: &String) -> Feature {
         let feature = Feature {
             feature_name: feature_name.clone(),
-            time_spent_minutes: 0,
+            timeoints: Vec::new(),
         };
         return feature;
     }
@@ -92,6 +104,6 @@ impl Feature {
     }
 
     pub fn get_time_spent_minutes(&self) -> String {
-        return self.time_spent_minutes.to_string() + " min";
+        return "0 min".to_string();
     }
 }
