@@ -9,11 +9,9 @@ pub struct Database {
 
 impl Database {
     pub fn open_or_create_new() -> Database {
-        let mut database = Database {
+        let mut database: Database = Database {
             projects: Vec::new(),
         };
-        let proj = Project::create_project("Dummy".to_string(), None);
-        database.add_project(proj);
         database = data::read::read_from_file(database);
         return database;
     }
