@@ -24,6 +24,30 @@ impl Database {
         self.projects.push(project);
     }
 
+    pub fn add_timepoint(&mut self, project: String, feature: Feature, tp: Timepoint) {
+        let project = self.projects.iter_mut().find(|p| p.name == project);
+        match project {
+            Some(p) => {
+                // look for the feature
+                let feature = p
+                    .features
+                    .iter_mut()
+                    .find(|f| f.feature_name == feature.feature_name);
+                match feature {
+                    Some(f) => {
+                        f.add_timepoint(tp);
+                    }
+                    None => {
+                        eprintln!("Feature does not exist");
+                    }
+                }
+            }
+            None => {
+                eprintln!("project does not exists.");
+            }
+        }
+    }
+
     pub fn add_feature_to_project(&mut self, project: &String, feature: Feature) {
         //check if the project already exists
         if let Some(existing_project) = self.projects.iter_mut().find(|p| p.name == *project) {
@@ -33,8 +57,8 @@ impl Database {
         eprintln!("Could not add the feature. Could not find the project. :(")
     }
 
-    pub fn get_project(&mut self, project_name: &str) -> Option<&Project> {
-        return self.projects.iter().find(|p| p.name == project_name);
+    pub fn get_project(&mut self, project_name: &str) -> Option<&mut Project> {
+        return self.projects.iter_mut().find(|p| p.name == project_name);
     }
 
     pub fn get_projects(self) -> Vec<Project> {
@@ -43,15 +67,15 @@ impl Database {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-enum TimepointType {
+pub enum TimepointType {
     START,
     STOP,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Timepoint {
-    tp: std::time::SystemTime,
-    tp_type: TimepointType,
+    pub tp: std::time::SystemTime,
+    pub tp_type: TimepointType,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -89,8 +113,12 @@ impl Project {
         return feature;
     }
 
-    pub fn get_features(self) -> Vec<Feature> {
-        return self.features;
+    pub fn get_features(&self) -> &Vec<Feature> {
+        return &self.features;
+    }
+
+    pub fn get_features_mut(&mut self) -> &mut Vec<Feature> {
+        return &mut self.features;
     }
 
     pub fn get_project_info(&self) -> &String {
@@ -101,6 +129,10 @@ impl Project {
 impl Feature {
     pub fn get_name(&self) -> &String {
         return &self.feature_name;
+    }
+
+    pub fn add_timepoint(&mut self, tp: Timepoint) {
+        self.timeoints.push(tp);
     }
 
     pub fn get_time_spent_minutes(&self) -> String {

@@ -1,3 +1,4 @@
+use crate::core::database::Timepoint;
 use clap::Args;
 
 #[derive(Debug, Args)]
@@ -16,5 +17,6 @@ pub struct StartArgs {
 }
 
 pub fn handle_start(data: &StartArgs) {
-    println!("Start timepoint, {data:?}");
+    let tp = std::time::SystemTime::now();
+    Timepoint::start(tp, &data.project, &data.feature);
 }
