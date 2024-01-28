@@ -57,11 +57,19 @@ impl Database {
         eprintln!("Could not add the feature. Could not find the project. :(")
     }
 
-    pub fn get_project(&mut self, project_name: &str) -> Option<&mut Project> {
-        return self.projects.iter_mut().find(|p| p.name == project_name);
+    pub fn get_project_mut(&mut self, project_name: &String) -> Option<&mut Project> {
+        return self.projects.iter_mut().find(|p| &p.name == project_name);
     }
 
-    pub fn get_projects(self) -> Vec<Project> {
+    pub fn get_project(&self, project_name: &String) -> Option<&Project> {
+        return self.projects.iter().find(|p| &p.name == project_name);
+    }
+
+    pub fn get_projects(&self) -> &Vec<Project> {
+        return &self.projects;
+    }
+
+    pub fn get_projects_mut(self) -> Vec<Project> {
         return self.projects;
     }
 }
@@ -111,6 +119,20 @@ impl Project {
             timeoints: Vec::new(),
         };
         return feature;
+    }
+
+    pub fn get_feature(&self, feature_name: &str) -> Option<&Feature> {
+        return self
+            .features
+            .iter()
+            .find(|f| f.feature_name == feature_name);
+    }
+
+    pub fn get_feature_mut(&mut self, feature_name: &str) -> Option<&mut Feature> {
+        return self
+            .features
+            .iter_mut()
+            .find(|f| f.feature_name == feature_name);
     }
 
     pub fn get_features(&self) -> &Vec<Feature> {
