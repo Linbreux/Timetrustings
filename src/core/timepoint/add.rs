@@ -1,6 +1,6 @@
 use crate::core::{
     data,
-    database::{self, Timepoint},
+    database::{self, Timepoint, TimepointType},
 };
 
 impl Timepoint {
@@ -39,6 +39,7 @@ impl Timepoint {
                 }
                 if matches != 1 {
                     eprintln!("Did not find a unique project to link the feature to.");
+                    return;
                 }
             }
         }
@@ -48,6 +49,20 @@ impl Timepoint {
                 let found_feature = fp.get_feature_mut(&feature_to_use);
                 match found_feature {
                     Some(ff) => {
+                        match timepoint_type {
+                            TimepointType::START => {
+                                if !ff.can_start_timepoint() {
+                                    eprintln!("There is still a timepoint in progress.");
+                                    return;
+                                }
+                            }
+                            TimepointType::STOP => {
+                                if !ff.can_stop_timepoint() {
+                                    eprintln!("There is no timepoint active. First start one.");
+                                    return;
+                                }
+                            }
+                        };
                         let tp_object = Timepoint {
                             tp,
                             tp_type: timepoint_type,

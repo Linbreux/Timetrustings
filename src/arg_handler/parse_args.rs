@@ -1,4 +1,4 @@
-use crate::arg_handler::{project, start, stop};
+use crate::arg_handler::{active, project, start, stop};
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
@@ -21,6 +21,8 @@ enum Commands {
     /// project commands
     #[command(subcommand)]
     Project(project::ProjectCommands),
+    /// List active projects
+    Active(active::ActiveArgs),
 }
 
 fn handle_command(command: &Commands) {
@@ -34,6 +36,7 @@ fn handle_command(command: &Commands) {
         Commands::Project(command) => {
             project::handle_command(&command);
         }
+        Commands::Active(data) => active::handle_active(data),
     }
 }
 

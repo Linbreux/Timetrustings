@@ -72,6 +72,16 @@ impl Database {
     pub fn get_projects_mut(self) -> Vec<Project> {
         return self.projects;
     }
+
+    pub fn get_all_features(&self) -> Vec<(&Project, &Feature)> {
+        let mut project_features: Vec<(&Project, &Feature)> = Vec::new();
+        for project in &self.projects {
+            for feature in project.get_features() {
+                project_features.push((&project, &feature));
+            }
+        }
+        return project_features;
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -155,6 +165,41 @@ impl Feature {
 
     pub fn add_timepoint(&mut self, tp: Timepoint) {
         self.timeoints.push(tp);
+    }
+    pub fn get_timepoints(&self) -> &Vec<Timepoint> {
+        return &self.timeoints;
+    }
+
+    pub fn can_start_timepoint(&self) -> bool {
+        let start_count = self
+            .timeoints
+            .iter()
+            .filter(|tp| matches!(tp.tp_type, TimepointType::START))
+            .count();
+
+        let stop_count = self
+            .timeoints
+            .iter()
+            .filter(|tp| matches!(tp.tp_type, TimepointType::STOP))
+            .count();
+
+        return start_count == stop_count;
+    }
+
+    pub fn can_stop_timepoint(&self) -> bool {
+        let start_count = self
+            .timeoints
+            .iter()
+            .filter(|tp| matches!(tp.tp_type, TimepointType::START))
+            .count();
+
+        let stop_count = self
+            .timeoints
+            .iter()
+            .filter(|tp| matches!(tp.tp_type, TimepointType::STOP))
+            .count();
+
+        return start_count > stop_count;
     }
 
     pub fn get_time_spent_minutes(&self) -> String {
