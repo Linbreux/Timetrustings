@@ -170,7 +170,7 @@ impl Feature {
         return &self.timeoints;
     }
 
-    pub fn can_start_timepoint(&self) -> bool {
+    pub fn get_timepoint_counts(&self) -> (usize, usize) {
         let start_count = self
             .timeoints
             .iter()
@@ -182,23 +182,16 @@ impl Feature {
             .iter()
             .filter(|tp| matches!(tp.tp_type, TimepointType::STOP))
             .count();
+        return (start_count, stop_count);
+    }
 
+    pub fn can_start_timepoint(&self) -> bool {
+        let (start_count, stop_count) = self.get_timepoint_counts();
         return start_count == stop_count;
     }
 
     pub fn can_stop_timepoint(&self) -> bool {
-        let start_count = self
-            .timeoints
-            .iter()
-            .filter(|tp| matches!(tp.tp_type, TimepointType::START))
-            .count();
-
-        let stop_count = self
-            .timeoints
-            .iter()
-            .filter(|tp| matches!(tp.tp_type, TimepointType::STOP))
-            .count();
-
+        let (start_count, stop_count) = self.get_timepoint_counts();
         return start_count > stop_count;
     }
 
