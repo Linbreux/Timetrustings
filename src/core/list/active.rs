@@ -18,10 +18,13 @@ pub fn list_active() {
         return;
     }
 
+    let mut prev_project: Option<&Project> = None;
     for (project, feature) in active_feature {
         let active_timepoint = feature.get_timepoints().last();
         let tp = active_timepoint.expect("No Timepoints");
-        println!(" {} {}", "★".yellow(), project.get_project_info().yellow());
+        if prev_project.is_none() || !std::ptr::eq(project, prev_project.unwrap()) {
+            println!(" {} {}", "★".yellow(), project.get_project_info().yellow());
+        }
         println!(
             "    {} {} ➤ {} ({})",
             "•".blue(),
@@ -29,5 +32,6 @@ pub fn list_active() {
             tp.get_human_time(),
             tp.timepoint_till_now()
         );
+        prev_project = Some(&project);
     }
 }
