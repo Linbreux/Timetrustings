@@ -1,10 +1,9 @@
 use crate::core;
-use clap::{Args, Subcommand};
+use clap::Args;
 
 #[derive(Debug, Args)]
 pub struct ActiveArgs {}
 
-pub fn handle_active(data: &ActiveArgs) {
+pub fn handle_active(_data: &ActiveArgs) {
     core::list::active::list_active();
-    println!("active: {:?}", data);
 }

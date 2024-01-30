@@ -1,3 +1,10 @@
+use humantime;
+use std::{
+    fmt::{Debug, Display},
+    time::UNIX_EPOCH,
+};
+
+use chrono;
 use serde::{Deserialize, Serialize};
 
 use super::data;
@@ -94,6 +101,31 @@ pub enum TimepointType {
 pub struct Timepoint {
     pub tp: std::time::SystemTime,
     pub tp_type: TimepointType,
+}
+
+impl Timepoint {
+    pub fn timepoint_till_now(&self) -> String {
+        let tp_duration = self
+            .tp
+            .duration_since(UNIX_EPOCH)
+            .expect("Time went backwards");
+        let till_now = std::time::SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("");
+        let duration = till_now - tp_duration;
+        let sec_duration = std::time::Duration::new(duration.as_secs(), 0);
+        let test = humantime::format_duration(sec_duration);
+        test.to_string()
+    }
+    fn pretty_print_system_time(t: std::time::SystemTime) -> String {
+        let dt: chrono::DateTime<chrono::Utc> = t.clone().into();
+        let s: String = dt.format("%d-%b-%Y %H:%M:%S").to_string();
+        return s;
+    }
+
+    pub fn get_human_time(&self) -> String {
+        return Self::pretty_print_system_time(self.tp);
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize)]
