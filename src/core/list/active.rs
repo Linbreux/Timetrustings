@@ -30,7 +30,7 @@ pub fn list_active() {
             "•".blue(),
             feature.get_name().blue(),
             tp.get_human_time(),
-            tp.timepoint_till_now()
+            tp.pretty_print_duration()
         );
         prev_project = Some(&project);
     }

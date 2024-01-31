@@ -10,7 +10,7 @@ pub fn list_projects() {
         for feature in project.get_features() {
             println!(
                 "   • {:<5} ➤ {}",
-                feature.get_time_spent_minutes(),
+                feature.calculate_total_time(),
                 feature.get_name().blue(),
             );
         }

@@ -1,8 +1,6 @@
+use colored::Colorize;
 use humantime;
-use std::{
-    fmt::{Debug, Display},
-    time::UNIX_EPOCH,
-};
+use std::time::UNIX_EPOCH;
 
 use chrono;
 use serde::{Deserialize, Serialize};
@@ -112,7 +110,7 @@ pub struct Timepoint {
 }
 
 impl Timepoint {
-    pub fn timepoint_till_now(&self) -> String {
+    pub fn timepoint_till_now(&self) -> std::time::Duration {
         let tp_duration = self
             .tp
             .duration_since(UNIX_EPOCH)
@@ -121,9 +119,27 @@ impl Timepoint {
             .duration_since(UNIX_EPOCH)
             .expect("");
         let duration = till_now - tp_duration;
+        return duration;
+    }
+
+    pub fn pretty_print_duration(&self) -> String {
+        let duration = self.timepoint_till_now();
         let sec_duration = std::time::Duration::new(duration.as_secs(), 0);
         let test = humantime::format_duration(sec_duration);
         test.to_string()
+    }
+
+    pub fn difference(tp1: &Timepoint, tp2: &Timepoint) -> std::time::Duration {
+        let tp1_duration = tp1.tp.duration_since(UNIX_EPOCH).expect("");
+        let tp2_duration = tp2.tp.duration_since(UNIX_EPOCH).expect("");
+
+        if tp1_duration < tp2_duration {
+            let duration = tp2_duration - tp1_duration;
+            return duration;
+        }
+
+        let duration = tp1_duration - tp2_duration;
+        return duration;
     }
 
     fn pretty_print_system_time(t: std::time::SystemTime) -> String {
@@ -234,6 +250,25 @@ impl Feature {
     pub fn can_stop_timepoint(&self) -> bool {
         let (start_count, stop_count) = self.get_timepoint_counts();
         return start_count > stop_count;
+    }
+
+    pub fn calculate_total_time(&self) -> String {
+        let mut time: std::time::Duration = std::time::Duration::new(0, 0);
+        for i in (0..self.timeoints.len()).step_by(2) {
+            if !((i) >= self.timeoints.len() - 1) {
+                time += Timepoint::difference(&self.timeoints[i], &self.timeoints[i + 1]);
+            }
+        }
+
+        let mut suffix = "";
+        if self.can_stop_timepoint() {
+            // still active time
+            time += self.timeoints.last().unwrap().timepoint_till_now();
+            suffix = " (active)";
+        }
+        let sec_duration = std::time::Duration::new(time.as_secs(), 0);
+        let time = humantime::format_duration(sec_duration);
+        return format!("{} {}", time.to_string(), suffix.yellow());
     }
 
     pub fn get_time_spent_minutes(&self) -> String {
