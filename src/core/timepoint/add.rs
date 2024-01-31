@@ -70,7 +70,7 @@ impl Timepoint {
                         // add the timepoint
                         ff.add_timepoint(tp_object);
                         data::write::write_to_file(&db);
-                        println!("Timepoint added.");
+                        println!("✔ Timepoint added.");
                     }
                     None => {
                         eprintln!("Could not add the timepoint. Could not find the feature.");

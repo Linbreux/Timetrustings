@@ -55,13 +55,21 @@ impl Database {
         }
     }
 
-    pub fn add_feature_to_project(&mut self, project: &String, feature: Feature) {
+    pub fn add_feature_to_project(&mut self, project: &String, feature: Feature) -> bool {
         //check if the project already exists
         if let Some(existing_project) = self.projects.iter_mut().find(|p| p.name == *project) {
-            existing_project.features.push(feature);
-            return;
+            let exist = existing_project
+                .get_features()
+                .iter()
+                .any(|f| f.feature_name == feature.feature_name);
+            if !exist {
+                existing_project.features.push(feature);
+                return true;
+            }
+            return false;
         }
-        eprintln!("Could not add the feature. Could not find the project. :(")
+        eprintln!("Could not add the feature. Could not find the project. :(");
+        return false;
     }
 
     pub fn get_project_mut(&mut self, project_name: &String) -> Option<&mut Project> {
@@ -117,6 +125,7 @@ impl Timepoint {
         let test = humantime::format_duration(sec_duration);
         test.to_string()
     }
+
     fn pretty_print_system_time(t: std::time::SystemTime) -> String {
         let dt: chrono::DateTime<chrono::Utc> = t.clone().into();
         let s: String = dt.format("%d-%b-%Y %H:%M:%S").to_string();
